@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:ImageProcessor"
         Title="MainWindow" Height="350" Width="800" AllowDrop="True" Drop="Window_Drop"
-         DataContext="{x:Static local:WindsorContainerSingleton.ImageProcessorViewModel}" DragEnter="Window_DragEnter"
+         DataContext="{x:Static local:WindsorContainerSingleton.ImageProcessorViewModel}"
         >
     <Window.Resources>
 

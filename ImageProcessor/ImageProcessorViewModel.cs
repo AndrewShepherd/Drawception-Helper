@@ -320,8 +320,9 @@ namespace ImageProcessor
                     html = System.Text.Encoding.ASCII.GetString(buffer);
                 }
             }
-
             Uri imageUri;
+
+            
             if (TryExtractImageUri(html, out imageUri))
             {
                 if (!this._panelId.HasValue)
