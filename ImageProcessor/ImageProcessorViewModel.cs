@@ -263,24 +263,25 @@ namespace ImageProcessor
             {
                 XmlReader rdr = new XmlTextReader(fragment, XmlNodeType.Element, null);
                 rdr.Read();
-                if (rdr.Name == "img")
+                if (rdr.Name != "img")
                 {
-                    string attribute = rdr.GetAttribute("src");
-                    if (!string.IsNullOrEmpty(attribute))
+                    if (!rdr.ReadToDescendant("img"))
                     {
-                        imageUri = new Uri(attribute);
-                        return true;
+                        imageUri = null;
+                        return false;
                     }
                 }
-                else if (rdr.Name == "span")
+                string attribute = rdr.GetAttribute("src");
+                if (!string.IsNullOrEmpty(attribute))
                 {
-                    // TODO: Figure out how to drill down to the img element
-                    rdr = rdr.ReadSubtree();
-                    throw new NotImplementedException();
+                    imageUri = new Uri(attribute);
+                    return true;
                 }
-                imageUri = default(Uri);
-                return false;
-
+                else
+                {
+                    imageUri = default(Uri);
+                    return false;
+                }
             }
             catch (Exception ex)
             {

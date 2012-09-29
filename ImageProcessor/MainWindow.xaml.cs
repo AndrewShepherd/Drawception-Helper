@@ -55,12 +55,10 @@ namespace ImageProcessor
  
 
 
-        private void Window_Drop_1(object sender, DragEventArgs e)
+        private async void Window_Drop(object sender, DragEventArgs e)
         {
             ImageProcessorViewModel viewModel = this.ImageProcessorViewModel;
-            Action act = async () => { await viewModel.LoadImageData(e.Data); };
-            act.BeginInvoke(null, null);
-
+            await viewModel.LoadImageData(e.Data);
         }
 
 
