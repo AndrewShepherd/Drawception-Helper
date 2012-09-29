@@ -21,31 +21,30 @@
                     <Setter Property="Width" Value="30" />
                     <Setter Property="Height" Value="30" />
                 </Style>
+                <DataTemplate DataType="{x:Type local:ColorToggleViewModel}">
+                    <Border Width="30" Height="30">
+                        <Border.Background>
+                            <SolidColorBrush Color="{Binding Color}" />
+                        </Border.Background>
+                        <CheckBox IsChecked="{Binding IsActivated}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                </DataTemplate>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
+            
             <TextBlock Text="{Binding GranularityDescription}" />
-            <ListBox ItemsSource="{Binding ColorToggles}" Grid.Column="1" Name="_lbColorToggles">
-                <ListBox.ItemsPanel>
+            
+            <ItemsControl ItemsSource="{Binding ColorToggles}" Grid.Column="1">
+                <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel MaxWidth="{Binding ElementName=_lbColorToggles,Path=ActualWidth}" Orientation="Horizontal" IsItemsHost="True"  />
+                        <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
                     </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border Width="30" Height="30">
-                            <Border.Background>
-                                <SolidColorBrush Color="{Binding Color}" />
-                            </Border.Background>
-                            <CheckBox IsChecked="{Binding IsActivated}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                    </DataTemplate>
-                    
-                </ListBox.ItemTemplate>
-            </ListBox>
-
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+            
         </Grid>
     <Grid Grid.Row="1">
         <Grid.Resources>
