@@ -30,7 +30,6 @@
             <ListBox ItemsSource="{Binding ColorToggles}" Grid.Column="1" Name="_lbColorToggles">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <!-- Putting a comment here to test the line feeds-->
                         <WrapPanel MaxWidth="{Binding ElementName=_lbColorToggles,Path=ActualWidth}" Orientation="Horizontal" IsItemsHost="True"  />
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
