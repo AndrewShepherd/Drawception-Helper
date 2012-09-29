@@ -48,17 +48,15 @@ namespace ImageProcessor
 
 
 
- 
-
-  
-
- 
-
-
         private async void Window_Drop(object sender, DragEventArgs e)
         {
             ImageProcessorViewModel viewModel = this.ImageProcessorViewModel;
             await viewModel.LoadImageData(e.Data);
+        }
+
+        private void Window_DragEnter(object sender, DragEventArgs e)
+        {
+
         }
 
 
