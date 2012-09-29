@@ -1,0 +1,5 @@
+#
+# This lists the files that should not be checked in to git
+#
+##############################################################
+*.suo
