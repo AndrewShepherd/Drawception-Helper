@@ -15,18 +15,22 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <StackPanel.Resources>
+        <Grid Grid.Row="0" Height="Auto">
+            <Grid.Resources>
                 <Style TargetType="ToggleButton">
                     <Setter Property="Width" Value="30" />
                     <Setter Property="Height" Value="30" />
                 </Style>
-            </StackPanel.Resources>
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
             <TextBlock Text="{Binding GranularityDescription}" />
-            <ListBox ItemsSource="{Binding ColorToggles}">
+            <ListBox ItemsSource="{Binding ColorToggles}" Grid.Column="1" Name="_lbColorToggles">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" />
+                        <WrapPanel MaxWidth="{Binding ElementName=_lbColorToggles,Path=ActualWidth}" Orientation="Horizontal" IsItemsHost="True"  />
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
                 <ListBox.ItemTemplate>
@@ -42,7 +46,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
 
-        </StackPanel>
+        </Grid>
     <Grid Grid.Row="1">
         <Grid.Resources>
             
