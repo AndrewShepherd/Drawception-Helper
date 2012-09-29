@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace ImageProcessor
 {
+    // Adding this comment just to see if the cl-lf problem gets fixed.
     public abstract class NotifyPropertyChangedImpl<T, U> : INotifyPropertyChanged where U : INotificationDispatcher, new()
     {
         private readonly U _dispatcher = new U();
