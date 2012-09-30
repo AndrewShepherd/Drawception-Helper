@@ -109,8 +109,6 @@ namespace ImageProcessor
         public static ImageProcessingResults Process(ImageProcessingJob imageProcessingJob)
         {
             // Generate a new pixel array based on the old pixel array
-
-
             PixelColor[,] originalPixelColours = imageProcessingJob.PixelColors; 
             var dimensionOne = originalPixelColours.GetLength(0);
             var dimensionTwo = originalPixelColours.GetLength(1);
