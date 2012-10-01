@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml;
+using ImageProcessor.DragDrop;
 
 namespace ImageProcessor
 {
@@ -215,138 +216,26 @@ namespace ImageProcessor
             }
         }
 
-        private class ExtractedImageData
-        {
-            public bool Success;
-            public byte[] ImageData;
-        }
-
-        private static async Task<ExtractedImageData> TryExtractImageDataFromUri(Uri uri)
-        {
-            
-            ExtractedImageData rv = new ExtractedImageData { Success = false };
-
-           
-                try
-                {
 
 
-                    using (WebClient webClient = new WebClient())
-                    {
-                        int threadIdBefore = System.Threading.Thread.CurrentThread.ManagedThreadId;
-                        rv.ImageData = await webClient.DownloadDataTaskAsync(uri.ToString());
-                        int threadIdAfter = System.Threading.Thread.CurrentThread.ManagedThreadId;
-                        rv.Success = true;
-//                        webClient.DownloadFileAsync(uri, fileName);
-                    }
-                //    using (FileStream fs = File.OpenRead(fileName))
-                //    {
-                //        rv.ImageData = new byte[fs.Length];
-                //        fs.Read(rv.ImageData, 0, (int)fs.Length);
-                //    }
-                //    File.Delete(fileName);
-                //    rv.Success = true;
-                //
-                }
-                catch
-                {
-                    rv.Success = false;
-                }
-            
+       
 
-            return rv;
-        }
-
-        private static bool TryExtractImageUri(string fragment, out Uri imageUri)
-        {
-            try
-            {
-                XmlReader rdr = new XmlTextReader(fragment, XmlNodeType.Element, null);
-                rdr.Read();
-                if (rdr.Name != "img")
-                {
-                    if (!rdr.ReadToDescendant("img"))
-                    {
-                        imageUri = null;
-                        return false;
-                    }
-                }
-                string attribute = rdr.GetAttribute("src");
-                if (!string.IsNullOrEmpty(attribute))
-                {
-                    imageUri = new Uri(attribute);
-                    return true;
-                }
-                else
-                {
-                    imageUri = default(Uri);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                imageUri = default(Uri);
-                return false;
-            }
-        }
+        
 
         private long? _panelId;
 
-        private async Task<ExtractedImageData> TryExtractImageDataFromHtml(IDataObject data)
-        {
-
-            string[] formats = data.GetFormats();
-            if (!formats.Contains("text/html"))
-            {
-                return new ExtractedImageData { Success = false };
-            }
-            var obj = data.GetData("text/html");
-            string html = string.Empty;
-            if (obj is string)
-            {
-                html = (string)obj;
-            }
-            else if (obj is MemoryStream)
-            {
-                MemoryStream ms = (MemoryStream)obj;
-                byte[] buffer = new byte[ms.Length];
-                ms.Read(buffer, 0, (int)ms.Length);
-                if (buffer[1] == (byte)0)  // Detecting unicode
-                {
-                    html = System.Text.Encoding.Unicode.GetString(buffer);
-                }
-                else
-                {
-                    html = System.Text.Encoding.ASCII.GetString(buffer);
-                }
-            }
-            Uri imageUri;
-
-            
-            if (TryExtractImageUri(html, out imageUri))
-            {
-                if (!this._panelId.HasValue)
-                {
-                    this._panelId = this._processingTaskMonitor.OpenPanel();
-                }
-                this._processingTaskMonitor.SetPanelText(this._panelId.Value, "Uploading image from web...");
-                var imageData = await TryExtractImageDataFromUri(imageUri);
-                this._processingTaskMonitor.SetPanelText(this._panelId.Value, "Uploaded");
-                return imageData;
-            }
-            else
-            {
-                return new ExtractedImageData { Success = false };
-            }
-
-        }
 
 
 
         internal async Task LoadImageData(IDataObject dataObject)
         {
 
-            var imageFromHtml = await TryExtractImageDataFromHtml(dataObject);
+            if (!this._panelId.HasValue)
+            {
+                this._panelId = this._processingTaskMonitor.OpenPanel();
+            }
+
+            var imageFromHtml = await DragDropUtils.TryExtractImageDataFromHtml(dataObject, _processingTaskMonitor, this._panelId.Value);
 
             if (imageFromHtml.Success)
             {
@@ -357,12 +246,13 @@ namespace ImageProcessor
             if (dataObject.GetFormats().Contains("FileDrop"))
             {
                 var filePaths = (string[])dataObject.GetData("FileDrop");
-                using (var fileStream = File.OpenRead(filePaths[0]))
+                byte[] buffer = null;
+                using (Stream stream = File.OpenRead(filePaths[0]))
                 {
-                    var buffer = new byte[fileStream.Length];
-                    fileStream.Read(buffer, 0, (int)fileStream.Length);
-                    this._sourceImage.ImageBinary = buffer;
+                    buffer = new byte[stream.Length];
+                    await stream.ReadAsync(buffer, 0, (int)stream.Length);
                 }
+                this._sourceImage.ImageBinary = buffer;
             }   
         }
     }
