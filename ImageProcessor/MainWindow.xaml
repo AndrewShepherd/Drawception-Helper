@@ -56,7 +56,15 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
-            <Slider 
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Name="algorithmSelection">
+                    <RadioButton IsChecked="{Binding AlgorithmIsRgb}">RGB</RadioButton>
+                    <RadioButton IsChecked="{Binding AlgorithmIsHsv}">HSV</RadioButton>
+                </StackPanel>
+                    <Slider Grid.Row="1"
                 HorizontalAlignment="Left" 
                 Orientation="Vertical" 
                 VerticalAlignment="Stretch" 

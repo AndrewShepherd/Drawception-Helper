@@ -13,10 +13,11 @@ namespace ImageProcessor
         public BitmapSource Image;
         public double Fidelity;
         public List<Color> AllowableColors;
-        public PixelColor[,] PixelColors;
+        public ColorRGBA[,] PixelColors;
         public int PixelWidth;
         public int PixelHeight;
         public double DpiX;
         public double DpiY;
+        public ColorMatchingAlgorithm ColorMatchingAlgorithm;
     }
 }

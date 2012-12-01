@@ -58,6 +58,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -82,6 +83,7 @@
     <Compile Include="ImmediateNotificationDispatcher.cs" />
     <Compile Include="INotificationDispatcher.cs" />
     <Compile Include="MainThreadNotificationDispatcher.cs" />
+    <Compile Include="ColorMatchingAlgorithm.cs" />
     <Compile Include="ProcessingTaskMonitor.cs" />
     <Compile Include="SourceImage.cs" />
     <Compile Include="WindorConstainerSingleton.cs" />

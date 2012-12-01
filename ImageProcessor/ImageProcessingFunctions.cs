@@ -17,32 +17,65 @@ namespace ImageProcessor
         public int PixelHeight;
         public double DpiX;
         public double DpiY;
-        public PixelColor[,] Pixels;
+        public ColorRGBA[,] Pixels;
     }
 
     static class ImageProcessingFunctions
     {
 
-
-        private static PixelColor MatchColor(IEnumerable<Color> allowable, PixelColor source)
+        private static ColorHSL MatchColor(IEnumerable<ColorHSL> allowable, ColorHSL source)
         {
-            int bestMatchValue = int.MaxValue;
-            Color bestMatch = default(Color);
+            ColorHSL bestMatch = default(ColorHSL);
+            double bestMatchValue = double.MaxValue;
             foreach (var color in allowable)
             {
-                int[] diffs = {
-                                 color.R - source.Red,
-                                 color.B - source.Blue,
-                                 color.G - source.Green
-                              };
-                int matchValue = diffs.Select(d => d * d).Sum();
+                double[] diffs = new double[] { color.Hue - source.Hue, color.Lightness - source.Lightness, color.Saturation - source.Saturation };
+                double matchValue = diffs.Select(d => d * d).Sum();
                 if (matchValue < bestMatchValue)
                 {
-                    bestMatch = color;
+
                     bestMatchValue = matchValue;
+                    bestMatch = color;
                 }
             }
-            return new PixelColor { Alpha = 255, Blue = bestMatch.B, Green = bestMatch.G, Red = bestMatch.R };
+            return bestMatch;
+        }
+
+        public static ColorRGBA MatchColor(IEnumerable<ColorRGBA> allowable, ColorRGBA source)
+        {
+            ColorRGBA bestMatch = default(ColorRGBA);
+            double bestMatchValue = double.MaxValue;
+            foreach (var color in allowable)
+            {
+                double[] diffs = new double[] { color.Red - source.Red, color.Green - source.Green, color.Blue - source.Blue, color.Alpha - source.Alpha };
+                double matchValue = diffs.Select(d => d * d).Sum();
+                if (matchValue < bestMatchValue)
+                {
+                    bestMatchValue = matchValue;
+                    bestMatch = color;
+                }
+            }
+            return bestMatch;
+        }
+
+
+
+        private static ColorRGBA MatchColor(IEnumerable<Color> allowable, ColorRGBA source, ColorMatchingAlgorithm colorMatchingAlgorithm)
+        {
+            if (colorMatchingAlgorithm == ColorMatchingAlgorithm.HSV)
+            {
+                ColorHSL bestHSL = MatchColor(allowable.Select(c => ColorHSL.FromWindowsMediaColor(c)).ToArray(),
+                                              ColorHSL.FromRGBA(source)
+                                              );
+                return bestHSL.ToColorRGBA();
+            }
+            else
+            {
+
+                ColorRGBA bestRGBA = MatchColor(allowable.Select(c => new ColorRGBA { Alpha = c.A, Blue = c.B, Green = c.G, Red = c.R }).ToArray(),
+                                                source);
+                return bestRGBA;
+            }
         }
 
 
@@ -80,7 +113,7 @@ namespace ImageProcessor
         }
 
 
-        static PixelColor CalculateAverageColor(IEnumerable<PixelColor> colors)
+        static ColorRGBA CalculateAverageColor(IEnumerable<ColorRGBA> colors)
         {
             ulong count = 0;
             ulong blue = 0, green = 0, red = 0, alpha = 0;
@@ -94,9 +127,9 @@ namespace ImageProcessor
             }
             if (count == 0)
             {
-                return default(PixelColor);
+                return default(ColorRGBA);
             }
-            return new PixelColor
+            return new ColorRGBA
             {
                 Alpha = (byte)(alpha / count),
                 Blue = (byte)(blue / count),
@@ -109,12 +142,12 @@ namespace ImageProcessor
         public static ImageProcessingResults Process(ImageProcessingJob imageProcessingJob)
         {
             // Generate a new pixel array based on the old pixel array
-            PixelColor[,] originalPixelColours = imageProcessingJob.PixelColors; 
+            ColorRGBA[,] originalPixelColours = imageProcessingJob.PixelColors; 
             var dimensionOne = originalPixelColours.GetLength(0);
             var dimensionTwo = originalPixelColours.GetLength(1);
 
             //PixelColor[,] processedPixels = (PixelColor[,])originalPixelColours.Clone();
-            PixelColor[,] processedPixels = new PixelColor[dimensionOne, dimensionTwo];
+            ColorRGBA[,] processedPixels = new ColorRGBA[dimensionOne, dimensionTwo];
             // Work out the rectangles
             var sourcePartitions = GetPartitions(dimensionOne, dimensionTwo, imageProcessingJob.Fidelity).ToArray();
             foreach (var partition in sourcePartitions)
@@ -123,7 +156,7 @@ namespace ImageProcessor
 
                 if (imageProcessingJob.AllowableColors.Count > 0)
                 {
-                    averageColor = MatchColor(imageProcessingJob.AllowableColors, averageColor);
+                    averageColor = MatchColor(imageProcessingJob.AllowableColors, averageColor, imageProcessingJob.ColorMatchingAlgorithm);
                 }
                 int xMin = (int)Math.Floor(partition.Left);
                 int xMax = Math.Min(processedPixels.GetLength(0), (int)Math.Ceiling(partition.Right));

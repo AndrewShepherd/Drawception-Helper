@@ -118,8 +118,9 @@ namespace ImageProcessor
                 AllowableColors = _allowableColors.ToList(),
                 PixelWidth = bitmap.PixelWidth,
                PixelHeight = bitmap.PixelHeight,
-            DpiX = bitmap.DpiX,
-            DpiY = bitmap.DpiY
+              DpiX = bitmap.DpiX,
+            DpiY = bitmap.DpiY,
+            ColorMatchingAlgorithm = this.PatternMatchingAlgorithm
             };
             this._imageProcessingWorkDispatcher.PushJob(imageProcessingJob);
         }
@@ -138,6 +139,24 @@ namespace ImageProcessor
                 if (_scaleProportion != value)
                 {
                     _scaleProportion = value;
+                    ResetDisplayImage();
+                }
+            }
+        }
+
+        private ColorMatchingAlgorithm _patternMatchingAlgorithm;
+        public ColorMatchingAlgorithm PatternMatchingAlgorithm 
+        {
+            get
+            {
+                return _patternMatchingAlgorithm;
+            }
+            set
+            {
+                if (_patternMatchingAlgorithm != value)
+                {
+                    _patternMatchingAlgorithm = value;
+                    Notify(_ => _.PatternMatchingAlgorithm);
                     ResetDisplayImage();
                 }
             }

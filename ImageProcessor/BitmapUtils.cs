@@ -22,7 +22,7 @@ namespace ImageProcessor
                 stride);
           }
         #else
-                public static void CopyPixels(this BitmapSource source, PixelColor[,] pixels, int stride, int offset)
+                public static void CopyPixels(this BitmapSource source, ColorRGBA[,] pixels, int stride, int offset)
                 {
                     var height = source.PixelHeight;
                     var width = source.PixelWidth;
@@ -32,7 +32,7 @@ namespace ImageProcessor
                     int x0 = offset - width * y0;
                     for (int y = 0; y < height; y++)
                         for (int x = 0; x < width; x++)
-                            pixels[x + x0, y + y0] = new PixelColor
+                            pixels[x + x0, y + y0] = new ColorRGBA
                             {
                                 Blue = pixelBytes[(y * width + x) * 4 + 0],
                                 Green = pixelBytes[(y * width + x) * 4 + 1],
@@ -43,13 +43,13 @@ namespace ImageProcessor
         #endif
 
 
-        public static IEnumerable<PixelColor> GetPixels(byte[] pixelByteArray, PixelFormat pixelFormat)
+        public static IEnumerable<ColorRGBA> GetPixels(byte[] pixelByteArray, PixelFormat pixelFormat)
         {
             if (pixelFormat == PixelFormats.Bgra32)
             {
                 for (int i = 0; i < pixelByteArray.Length; i += 4)
                 {
-                    yield return new PixelColor
+                    yield return new ColorRGBA
                     {
                         Blue = pixelByteArray[i],
                         Green = pixelByteArray[i + 1],
@@ -62,7 +62,7 @@ namespace ImageProcessor
             {
                 for (int i = 0; i < pixelByteArray.Length; i += 4)
                 {
-                    yield return new PixelColor
+                    yield return new ColorRGBA
                     {
                         Blue = pixelByteArray[i],
                         Green = pixelByteArray[i + 1],
@@ -77,17 +77,17 @@ namespace ImageProcessor
             }
         }
 
-        public static PixelColor[,] GetPixels(BitmapSource source)
+        public static ColorRGBA[,] GetPixels(BitmapSource source)
         {
 
             int height = source.PixelHeight;
             int width = source.PixelWidth;
-            PixelColor[,] result = new PixelColor[width, height];
+            ColorRGBA[,] result = new ColorRGBA[width, height];
 
             int nStride = (source.PixelWidth * source.Format.BitsPerPixel + 7) / 8;
             byte[] pixelByteArray = new byte[source.PixelHeight * nStride];
             source.CopyPixels(pixelByteArray, nStride, 0);
-            PixelColor[] pixelColors = GetPixels(pixelByteArray, source.Format).ToArray();
+            ColorRGBA[] pixelColors = GetPixels(pixelByteArray, source.Format).ToArray();
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -101,7 +101,7 @@ namespace ImageProcessor
         }
 
 
-        public static void PutPixels(WriteableBitmap bitmap, PixelColor[,] pixels)
+        public static void PutPixels(WriteableBitmap bitmap, ColorRGBA[,] pixels)
         {
             int width = pixels.GetLength(0);
             int height = pixels.GetLength(1);

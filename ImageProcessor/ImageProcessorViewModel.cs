@@ -88,6 +88,51 @@ namespace ImageProcessor
         }
 
 
+
+        private ColorMatchingAlgorithm MatchingAlgorithm
+        {
+            get
+            {
+                return this._imageData.PatternMatchingAlgorithm;
+            }
+            set
+            {
+                if (this._imageData.PatternMatchingAlgorithm != value)
+                {
+                    this._imageData.PatternMatchingAlgorithm = value;
+                    Notify(_ => _.AlgorithmIsRgb);
+                    Notify(_ => _.AlgorithmIsHsv);
+                }
+            }
+            
+        }
+
+        public bool AlgorithmIsRgb
+        {
+            get
+            {
+                return (MatchingAlgorithm == ColorMatchingAlgorithm.RGB);
+            }
+            set
+            {
+                this.MatchingAlgorithm = (value ? ColorMatchingAlgorithm.RGB : ColorMatchingAlgorithm.HSV);
+            }
+        }
+
+        public bool AlgorithmIsHsv
+        {
+            get
+            {
+                return (MatchingAlgorithm == ColorMatchingAlgorithm.HSV);
+            }
+            set
+            {
+                this.MatchingAlgorithm = (value ? ColorMatchingAlgorithm.HSV : ColorMatchingAlgorithm.RGB);
+            }
+        }
+
+
+
         private List<ColorToggleViewModel> _colorToggles = null;
         public IEnumerable<ColorToggleViewModel> ColorToggles
         {

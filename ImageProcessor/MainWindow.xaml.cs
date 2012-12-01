@@ -61,6 +61,11 @@ namespace ImageProcessor
             await viewModel.LoadImageData(e.Data);
         }
 
+        private void RadioButton_Checked_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
 
 
     }
